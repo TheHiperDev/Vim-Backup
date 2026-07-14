@@ -1,187 +1,167 @@
-# 🧠 Arch i3 + Vim Setup (ASUS N56VJ Edition)
+# 🧠 Vim Backup (Windows / GVim Setup)
 
-Minimal, fast, and personal Linux setup focused on productivity, low resource usage, and full control.
+Personal **GVim configuration for Windows** focused on:
 
-This configuration is designed for:
+* ⚡ Competitive Programming (C++)
+* 🪶 Lightweight workflow (no heavy IDEs)
+* ⌨️ Keyboard-driven editing
+* 💾 Easy backup & restore via Git
 
-* ⚡ Performance (low RAM / lightweight tools)
-* 🧩 Simplicity (manual Arch, no bloated frameworks)
-* 🎯 Productivity (keyboard-driven workflow)
-* 💻 Development (C++, competitive programming, scripting)
-
----
-
-## 📦 Overview
-
-Main components:
-
-* **WM:** i3
-* **Terminal:** kitty
-* **Editor:** GVim / Vim
-* **Launcher:** rofi
-* **File Manager:** thunar
-* **Notifications:** dunst
-* **Compositor:** picom
-* **Shell tools:** fastfetch, git, pamixer
+This repo is a **portable Vim setup**, so if something breaks, you can restore everything instantly.
 
 ---
 
-## ✨ Vim Configuration
+## ✨ Features
 
-This repo includes a custom Vim setup focused on speed and usability.
-
-### 🔌 Plugins
-
-* `gruvbox` — color scheme
-* `NERDTree` — file explorer
-* `fzf` + `fzf.vim` — fuzzy finder
-
-### ⌨️ Keybinds
-
-| Key         | Action                                |
-| ----------- | ------------------------------------- |
-| `<Space>`   | Leader key                            |
-| `F5`        | Compile & run current file            |
-| `:CP`       | Open competitive programming template |
-| `:Keybinds` | Show custom keybindings               |
-
-### ⚙️ Features
-
-* Minimal UI
-* Fast startup
-* Manual workflow (no heavy autocomplete)
-* C++ / Pascal / Python support via custom scripts
+* 🎨 **Gruvbox color scheme**
+* 🌲 **NERDTree** file explorer
+* 🔍 **fzf + fzf.vim** fuzzy finder
+* ⌨️ Custom keybindings (leader = `Space`)
+* ⚡ **F5 compile & run system**
+* 🧠 `:CP` command for competitive programming template
+* 🪶 Fast and minimal (runs great on low-end machines)
 
 ---
 
-## ▶️ Compile & Run (F5)
+## 📦 Plugins
 
-Vim is configured to use external scripts:
+Managed with **vim-plug**:
+
+* `morhetz/gruvbox`
+* `preservim/nerdtree`
+* `junegunn/fzf`
+* `junegunn/fzf.vim`
+
+---
+
+## ⚙️ Installation (Windows)
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/TheHiperDev/Vim-Backup.git
+```
+
+---
+
+### 2. Copy config
+
+Move `_vimrc` to:
+
+```
+C:\Users\YourUsername\Vim\_vimrc
+```
+
+---
+
+### 3. Install vim-plug
+
+Download:
+https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+Place it in:
+
+```
+C:\Users\YourUsername\vimfiles\autoload\plug.vim
+```
+
+(Create folders if they don’t exist)
+
+---
+
+### 4. Install plugins
+
+Open **GVim**, then run:
+
+```
+:PlugInstall
+```
+
+---
+
+## ⌨️ Keybindings
+
+| Key               | Action                                  |
+| ----------------- | --------------------------------------- |
+| `Space`           | Leader key                              |
+| `F5`              | Compile & run current file              |
+| `:CP`             | Insert competitive programming template |
+| `:NERDTreeToggle` | Toggle file explorer                    |
+
+---
+
+## ⚡ Compile & Run (F5)
+
+The setup uses external scripts:
 
 * `run_cpp.bat`
 * `run_pas.bat`
+* (optional) Python runner
 
-Make sure these exist and are in your PATH or configured correctly.
+Make sure:
 
----
-
-## 🖥️ i3 Setup
-
-Key bindings:
-
-| Key           | Action                |
-| ------------- | --------------------- |
-| `Mod + Enter` | Open terminal (kitty) |
-| `Mod + D`     | Rofi launcher         |
-| `Mod + E`     | Thunar                |
-| `Mod + B`     | Firefox               |
-
-### Startup Services
-
-* `dex` (autostart)
-* `xsettingsd`
-* `blueman-applet`
-* `nm-applet`
-* `xfce4-power-manager`
-* `dunst`
-* `picom`
+* Scripts exist
+* Paths inside them are correct
+* Compilers (g++, fpc, python) are installed and in PATH
 
 ---
 
-## 🎨 UI / Appearance
+## 🧠 Competitive Programming Workflow
 
-* Font: `JetBrainsMono Nerd Font`
-* Theme: Dark minimal
-* Rofi: custom theme with fuzzy matching
-* Notifications: clean `dunst` setup
-* Wallpaper system: dynamic via `feh + rofi`
+1. Open a `.cpp` file
+2. Run `:CP` → insert template
+3. Write solution
+4. Press `F5` → compile & run instantly
 
----
-
-## 🖱️ Input Configuration
-
-* Touchpad (Elantech):
-
-  * Natural scrolling enabled
-* Mouse:
-
-  * Acceleration disabled (raw input feel)
+Fast, simple, no IDE needed.
 
 ---
 
-## 💾 Installation
+## 📁 Structure
 
-Clone repo:
-
-```bash
-git clone https://github.com/TheHiperDev/arch-i3.git ~/.config
 ```
-
-(Optional backup first)
-
-```bash
-mv ~/.config ~/.config.backup
+Vim-Backup/
+├── _vimrc
+├── autoload/
+├── plugged/
+└── (plugin files)
 ```
 
 ---
 
-## 🔄 Workflow
+## 🔄 Restore Setup
 
-This setup is built around Git:
+If your config breaks:
 
-* Save config:
+```bash
+rm -rf %USERPROFILE%\vimfiles
+del %USERPROFILE%\_vimrc
+git clone https://github.com/TheHiperDev/Vim-Backup.git
+```
 
-  ```bash
-  git add .
-  git commit -m "Update config"
-  git push
-  ```
-
-* Restore config:
-
-  ```bash
-  rm -rf ~/.config
-  git clone https://github.com/TheHiperDev/arch-i3.git ~/.config
-  ```
+Then repeat setup steps.
 
 ---
 
-## ⚠️ Notes
+## 🧠 Philosophy
 
-* This setup is **personal**, not plug-and-play.
-* Some paths/scripts may need adjustment.
-* Designed for Arch Linux (manual install).
-
----
-
-## 🚀 Philosophy
-
-> Keep it simple. Keep it fast. Keep it yours.
-
-No bloated desktop environments.
-No unnecessary abstractions.
-Just a clean system you fully control.
+* Minimal > bloated IDEs
+* Speed > fancy UI
+* Keyboard > mouse
+* Control > automation
 
 ---
 
-## 📌 TODO
+## 🔒 Note
 
-* [ ] Add `.gitignore`
-* [ ] Document scripts (`run_cpp`, `run_pas`)
-* [ ] Add screenshots
-* [ ] Improve install script (optional)
+This is a **personal setup**, optimized for the author's workflow.
+Feel free to adapt it to your needs.
 
 ---
 
 ## 👤 Author
 
-Victor (TheHiperDev)
+**Victor (TheHiperDev)**
+Competitive Programming + Vim user
 
 ---
-
-## ⭐ If you like it
-
-Use it, modify it, break it, rebuild it.
-
-That’s the point.
-
