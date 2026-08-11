@@ -1,11 +1,11 @@
-" =========================
+" =========================================================
 " LEADER KEY
-" =========================
+" =========================================================
 let mapleader=" "
 
-" =========================
+" =========================================================
 " PLUGINS
-" =========================
+" =========================================================
 call plug#begin('~/vimfiles/plugged')
 
 Plug 'morhetz/gruvbox'
@@ -14,12 +14,14 @@ Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'clangd/coc-clangd'
+
 call plug#end()
 
-
-" =========================
-" BASIC SETTINGS (OPTIMIZED)
-" =========================
+" =========================================================
+" BASIC SETTINGS
+" =========================================================
 syntax on
 filetype plugin indent on
 
@@ -44,13 +46,11 @@ set incsearch
 set ignorecase
 set smartcase
 
-" better backspace behavior (modern Vim fix)
 set backspace=indent,eol,start
 
-
-" =========================
+" =========================================================
 " INDENTATION
-" =========================
+" =========================================================
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
@@ -58,72 +58,69 @@ set expandtab
 set autoindent
 set smartindent
 
-
-" =========================
+" =========================================================
 " THEME
-" =========================
+" =========================================================
 colorscheme gruvbox
 let g:gruvbox_contrast_dark = "hard"
 
-
-" =========================
-" 🔍 ZOOM SYSTEM (STABLE + CLEAN)
-" =========================
-
+" =========================================================
+" ZOOM SYSTEM
+" =========================================================
 set guifont=Consolas:h12
 let s:zoom = 12
 
 function! Zoom(delta)
-    let s:zoom += a:delta
+let s:zoom += a:delta
 
-    if s:zoom < 6
-        let s:zoom = 6
-    endif
+if s:zoom < 6
+    let s:zoom = 6
+endif
 
-    if s:zoom > 200
-        let s:zoom = 200
-    endif
+if s:zoom > 200
+    let s:zoom = 200
+endif
 
-    execute "set guifont=Consolas:h" . s:zoom
+execute "set guifont=Consolas:h" . s:zoom
+
 endfunction
 
 function! ZoomReset()
-    let s:zoom = 12
-    set guifont=Consolas:h12
+let s:zoom = 12
+set guifont=Consolas:h12
 endfunction
 
-" clean mappings (no conflicts, no duplicates)
 nnoremap <silent> + :call Zoom(1)<CR>
 nnoremap <silent> - :call Zoom(-1)<CR>
 nnoremap <silent> 0 :call ZoomReset()<CR>
 nnoremap <silent> = :call Zoom(1)<CR>
 
-
-" =========================
+" =========================================================
 " BRACKETS
-" =========================
+" =========================================================
 inoremap ( ()<Left>
 inoremap [ []<Left>
 inoremap " ""<Left>
 inoremap ' ''<Left>
 inoremap { {<CR>}<Esc>O
 
-
-" =========================
+" =========================================================
 " PROJECT ROOT
-" =========================
+" =========================================================
 function! FindRoot()
-    let l:git = finddir('.git', expand('%:p:h') . ';')
-    if !empty(l:git)
-        return fnamemodify(l:git, ':h')
-    endif
-    return getcwd()
+let l:git = finddir('.git', expand('%:p:h') . ';')
+
+if !empty(l:git)
+    return fnamemodify(l:git, ':h')
+endif
+
+return getcwd()
+
 endfunction
 
-
-" =========================
-" NERDTree (FASTER + CLEAN EXIT)
-" =========================
+" =========================================================
+" NERDTree
+" =========================================================
 let NERDTreeShowHidden=0
 let NERDTreeMinimalUI=1
 let NERDTreeDirArrows=1
@@ -133,73 +130,168 @@ nnoremap <silent> <leader>e :NERDTreeToggle<CR>
 nnoremap <silent> <leader>n :NERDTreeFind<CR>
 
 function! NERDTreeReset()
-    silent! NERDTreeClose
-    execute 'NERDTree ' . fnameescape(expand('%:p:h'))
+silent! NERDTreeClose
+execute 'NERDTree ' . fnameescape(expand('%:p:h'))
 endfunction
 
 nnoremap <silent> <leader>r :call NERDTreeReset()<CR>
 
-
-" =========================
-" fzf
-" =========================
+" =========================================================
+" FZF
+" =========================================================
 nnoremap <silent> <leader>p :execute 'Files ' . FindRoot()<CR>
 nnoremap <silent> <leader>b :Buffers<CR>
 
-
-" =========================
-" SEARCH ENGINE (FASTER + CLEANER)
-" =========================
+" =========================================================
+" SEARCH ENGINE
+" =========================================================
 function! FileSearch(query)
-    let g:search_term = a:query
+let g:search_term = a:query
 
-    silent! cclose
-    let l:escaped = escape(a:query, '/\.*$^~[]')
+silent! cclose
 
-    execute 'vimgrep /' . l:escaped . '/gj %'
-    copen
-    execute 'match Search /\V' . l:escaped . '/'
+let l:escaped = escape(a:query, '/\.*$^~[]')
 
-    if !empty(getqflist())
-        cfirst
-    endif
+execute 'vimgrep /' . l:escaped . '/gj %'
+
+copen
+
+execute 'match Search /\V' . l:escaped . '/'
+
+if !empty(getqflist())
+    cfirst
+endif
+
 endfunction
 
 command! -nargs=+ S call FileSearch(<q-args>)
 
-nnoremap <silent> <leader>s :S 
+nnoremap <silent> <leader>s :S
 nnoremap <silent> <leader>j :cnext<CR>
 nnoremap <silent> <leader>k :cprev<CR>
 nnoremap <silent> <leader>q :cclose<CR>:match none<CR>
 
-
-" =========================
+" =========================================================
 " CP TEMPLATE
-" =========================
+" =========================================================
 command! -nargs=1 CP call CpTemplate(<f-args>)
 
 function! CpTemplate(path)
-    let l:file = a:path
+let l:file = a:path
 
-    if l:file !~? '^[A-Za-z]:\\'
-        let l:file = 'C:\\Users\\istra_xckxrbh\\OneDrive\\Desktop\\' . l:file
-    endif
+if l:file !~? '^[A-Za-z]:\\'
+    let l:file =
+        \ 'C:\Users\istra_xckxrbh\OneDrive\Desktop\' . l:file
+endif
 
-    let l:file = substitute(l:file, '/', '\\', 'g')
+let l:file = substitute(l:file, '/', '\', 'g')
 
-    execute 'edit ' . fnameescape(l:file)
+execute 'edit ' . fnameescape(l:file)
 
-    if line('$') == 1 && getline(1) == ''
-        call append(0, readfile('C:\\Users\\istra_xckxrbh\\OneDrive\\Belgeler\\Vim Backup\\cp_template.cpp'))
-    endif
+if line('$') == 1 && getline(1) == ''
+    call append(
+        \ 0,
+        \ readfile(
+        \ 'C:\Users\istra_xckxrbh\OneDrive\Belgeler\Vim Backup\cp_template.cpp'
+        \ )
+    )
+endif
 
-    normal! gg
+normal! gg
+
 endfunction
 
+" =========================================================
+" COC / AUTOCOMPLETE TOGGLE
+" =========================================================
 
-" =========================
+" 0 = OFF by default
+" 1 = ON
+let g:autocomplete_enabled = 0
+
+" Completion popup settings
+set completeopt=menuone,noselect
+set shortmess+=c
+
+function! CheckBackspace() abort
+let l:col = col('.') - 1
+
+return !l:col || getline('.')[l:col - 1] =~# '\s'
+
+endfunction
+
+" ---------------------------------------------------------
+" ENABLE AUTOCOMPLETE
+" ---------------------------------------------------------
+function! CompleteOn() abort
+let g:autocomplete_enabled = 1
+
+silent! CocEnable
+
+echo "Autocomplete: ON"
+
+endfunction
+
+command! CompleteOn call CompleteOn()
+
+" ---------------------------------------------------------
+" DISABLE AUTOCOMPLETE
+" ---------------------------------------------------------
+function! CompleteOff() abort
+let g:autocomplete_enabled = 0
+
+silent! CocDisable
+
+echo "Autocomplete: OFF"
+
+endfunction
+
+command! CompleteOff call CompleteOff()
+
+" ---------------------------------------------------------
+" TAB
+" ---------------------------------------------------------
+inoremap <silent><expr> <TAB>
+\ !g:autocomplete_enabled
+\ ? "<Tab>"
+\ : coc#pum#visible()
+\ ? coc#pum#next(1)
+\ : CheckBackspace()
+\ ? "<Tab>"
+\ : coc#refresh()
+
+" ---------------------------------------------------------
+" SHIFT + TAB
+" ---------------------------------------------------------
+inoremap <silent><expr> <S-TAB>
+\ !g:autocomplete_enabled
+\ ? "<S-TAB>"
+\ : coc#pum#visible()
+\ ? coc#pum#prev(1)
+\ : "<C-h>"
+
+" ---------------------------------------------------------
+" ENTER
+" ---------------------------------------------------------
+inoremap <silent><expr> <CR>
+\ !g:autocomplete_enabled
+\ ? "<CR>"
+\ : coc#pum#visible()
+\ ? coc#pum#confirm()
+\ : "<CR>"
+
+" =========================================================
+" CLANGD / MINGW
+" =========================================================
+let g:coc_clangd_path = 'clangd'
+
+let g:coc_clangd_args = [
+\ '--query-driver=C:/Install/MinGW/bin/g++.exe'
+\ ]
+
+" =========================================================
 " TABS
-" =========================
+" =========================================================
 set showtabline=2
 set guitablabel=%t%m
 
@@ -218,109 +310,132 @@ nnoremap <leader>3 3gt
 nnoremap <leader>4 4gt
 nnoremap <leader>5 5gt
 
-nnoremap <leader>tf :tabedit 
+nnoremap <leader>tf :tabedit
 nnoremap <leader>ts :tab split<CR>
 
-" =========================
+" =========================================================
 " COMPILE
-" =========================
-nnoremap <F5> :w<CR>:call CompileRun()<CR>
+" =========================================================
+nnoremap <silent> <F5> :w<CR>:call CompileRun()<CR>
 
 function! CompileRun()
-    write
+write
 
-    let file = expand("%:p")
-    let ext = expand("%:e")
+let file = expand("%:p")
+let ext = expand("%:e")
 
-    if ext ==# "cpp"
-        execute '!start cmd /c ""C:\\Users\\istra_xckxrbh\\OneDrive\\Belgeler\\run_cpp.bat" "' . file . '""'
-    elseif ext ==# "pas"
-        execute '!start cmd /c ""C:\\Users\\istra_xckxrbh\\OneDrive\\Belgeler\\run_pas.bat" "' . file . '""'
-    elseif ext ==# "py"
-        execute '!start cmd /c "python "' . file . '" & pause"'
-    else
-        echo "No compiler for ." . ext
-    endif
+if ext ==# "cpp"
+
+    execute
+        \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_cpp.bat" "'
+        \ . file . '""'
+
+elseif ext ==# "pas"
+
+    execute
+        \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_pas.bat" "'
+        \ . file . '""'
+
+elseif ext ==# "py"
+
+    execute
+        \ '!start cmd /c "python "' . file . '" & pause"'
+
+else
+
+    echo "No compiler for ." . ext
+
+endif
+
 endfunction
 
-" =========================
+" =========================================================
 " KEYBINDS HELP PAGE
-" =========================
+" =========================================================
 function! OpenKeybinds()
 
-    let l:file = expand("~/vimfiles/KEYBINDS.md")
+let l:file = expand("~/vimfiles/KEYBINDS.md")
 
-    let l:lines = [
-    \ "# 🧠 VIM SETUP KEYBINDS",
-    \ "",
-    \ "==============================",
-    \ "🌳 NERDTree",
-    \ "==============================",
-    \ "<leader>e → toggle tree",
-    \ "<leader>n → focus file",
-    \ "<leader>r → reset tree",
-    \ "",
-    \ "==============================",
-    \ "⚡ fzf",
-    \ "==============================",
-    \ "<leader>p → files",
-    \ "<leader>b → buffers",
-    \ "",
-    \ "==============================",
-    \ "🔍 SEARCH (STABLE FILE SEARCH)",
-    \ "==============================",
-    \ "<leader>s → search in current file",
-    \ "<leader>j → next match",
-    \ "<leader>k → previous match",
-    \ "<leader>q → close search",
-    \ "",
-    \ "==============================",
-    \ "🚀 Compiler",
-    \ "==============================",
-    \ "F5 → compile & run",
-    \ "",
-    \ "==============================",
-    \ "⌨️ WINDOW CONTROL",
-    \ "==============================",
-    \ "Ctrl+w h/j/k/l → splits",
-    \ "",
-    \ "==============================",
-    \ "📑 TABS (GVIM)",
-    \ "==============================",
-    \ "<leader>tn → new tab",
-    \ "<leader>tx → close tab",
-    \ "<leader>tl → next tab",
-    \ "<leader>th → previous tab",
-    \ "<leader>to → close other tabs",
-    \ "",
-    \ "<Tab> → next tab",
-    \ "<Shift+Tab> → previous tab",
-    \ "",
-    \ "<leader>1-5 → jump tab number",
-    \ "<leader>tf → open file in new tab",
-    \ "<leader>ts → split into tab",
-    \ "",
-    \ "==============================",
-    \ "🔍 ZOOM",
-    \ "==============================",
-    \ "+ / = → zoom in",
-    \ "- → zoom out",
-    \ "0 → reset zoom (12 default)",
-    \ "",
-    \ "==============================",
-    \ "🧠 BASIC MOVEMENT",
-    \ "==============================",
-    \ "h j k l → move cursor",
-    \ "gg → top of file",
-    \ "G → bottom of file",
-    \ "w / b / e → word movement",
-    \ "",
-    \ "dd / yy / p → edit",
-    \ "u → undo"
-    \ ]
+let l:lines = [
+\ "# 🧠 VIM SETUP KEYBINDS",
+\ "",
+\ "==============================",
+\ "🌳 NERDTree",
+\ "==============================",
+\ "<leader>e → toggle tree",
+\ "<leader>n → focus file",
+\ "<leader>r → reset tree",
+\ "",
+\ "==============================",
+\ "⚡ fzf",
+\ "==============================",
+\ "<leader>p → files",
+\ "<leader>b → buffers",
+\ "",
+\ "==============================",
+\ "🔍 SEARCH",
+\ "==============================",
+\ "<leader>s → search in current file",
+\ "<leader>j → next match",
+\ "<leader>k → previous match",
+\ "<leader>q → close search",
+\ "",
+\ "==============================",
+\ "🚀 Compiler",
+\ "==============================",
+\ "F5 → compile & run",
+\ "",
+\ "==============================",
+\ "🧠 AUTOCOMPLETE",
+\ "==============================",
+\ ":CompleteOn → enable",
+\ ":CompleteOff → disable",
+\ "",
+\ "==============================",
+\ "⌨️ WINDOW CONTROL",
+\ "==============================",
+\ "Ctrl+w h/j/k/l → splits",
+\ "",
+\ "==============================",
+\ "📑 TABS",
+\ "==============================",
+\ "<leader>tn → new tab",
+\ "<leader>tx → close tab",
+\ "<leader>tl → next tab",
+\ "<leader>th → previous tab",
+\ "<leader>to → close other tabs",
+\ "",
+\ "<Tab> → next tab",
+\ "<Shift+Tab> → previous tab",
+\ "",
+\ "<leader>1-5 → jump tab number",
+\ "<leader>tf → open file in new tab",
+\ "<leader>ts → split into tab",
+\ "",
+\ "==============================",
+\ "🔍 ZOOM",
+\ "==============================",
+\ "+ / = → zoom in",
+\ "- → zoom out",
+\ "0 → reset zoom (12 default)",
+\ "",
+\ "==============================",
+\ "🧠 BASIC MOVEMENT",
+\ "==============================",
+\ "h j k l → move cursor",
+\ "gg → top of file",
+\ "G → bottom of file",
+\ "w / b / e → word movement",
+\ "",
+\ "dd / yy / p → edit",
+\ "u → undo"
+\ ]
 
-    call writefile(l:lines, l:file)
-    execute "edit " . l:file
+call writefile(l:lines, l:file)
+execute "edit " . l:file
+
 endfunction
 
 command! Keybinds call OpenKeybinds()
+
+
