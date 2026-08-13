@@ -172,7 +172,7 @@ endfunction
 
 command! -nargs=+ S call FileSearch(<q-args>)
 
-nnoremap <silent> <leader>s :S
+nnoremap <silent> <leader>s :S 
 nnoremap <silent> <leader>j :cnext<CR>
 nnoremap <silent> <leader>k :cprev<CR>
 nnoremap <silent> <leader>q :cclose<CR>:match none<CR>
@@ -185,7 +185,7 @@ nnoremap <silent> <leader>q :cclose<CR>:match none<CR>
 
 let g:cp_template = expand('~/.vim/cp_template.cpp')
 
-command! -nargs=1 CP call CpTemplate(<f-args>)
+command! -nargs=1 CP call CpTemplate(<q-args>)
 
 function! CpTemplate(path)
     let l:file = a:path
