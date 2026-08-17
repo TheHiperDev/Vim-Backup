@@ -175,29 +175,35 @@ nnoremap <silent> <leader>q :cclose<CR>:match none<CR>
 " =========================================================
 command! -nargs=1 CP call CpTemplate(<q-args>)
 
-function! CpTemplate(path)
-let l:file = a:path
+function! CpTemplate(path) abort
+    let l:file = a:path
 
-if l:file !~? '^[A-Za-z]:\\'
-    let l:file =
-        \ 'C:\Users\istra_xckxrbh\OneDrive\Desktop\' . l:file
-endif
+    " Add CP directory when only a filename is supplied
+    if l:file !~# '^[A-Za-z]:[\\/]'
+        let l:file = 'C:\Users\istra_xckxrbh\OneDrive\Desktop\' . l:file
+    endif
 
-let l:file = substitute(l:file, '/', '\', 'g')
+    " Normalize path separators
+    let l:file = substitute(l:file, '/', '\', 'g')
 
-execute 'edit ' . fnameescape(l:file)
+    " Template path
+    let l:template = 'C:\Users\istra_xckxrbh\OneDrive\Belgeler\Vim Backup\cp_template.cpp'
 
-if line('$') == 1 && getline(1) == ''
-    call append(
-        \ 0,
-        \ readfile(
-        \ 'C:\Users\istra_xckxrbh\OneDrive\Belgeler\Vim Backup\cp_template.cpp'
-        \ )
-    )
-endif
+    " Check that template exists
+    if !filereadable(l:template)
+        echoerr 'CP template not found: ' . l:template
+        return
+    endif
 
-normal! gg
+    " Open target file
+    execute 'edit ' . fnameescape(l:file)
 
+    " Only insert template into an empty new file
+    if line('$') == 1 && getline(1) == ''
+        call setline(1, readfile(l:template))
+    endif
+
+    normal! gg
 endfunction
 
 " =========================================================
