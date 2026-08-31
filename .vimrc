@@ -231,7 +231,7 @@ function! CpTemplate(path)
 endfunction
 
 " =========================================================
-" COC / AUTOCOMPLETE TOGGLE
+" COC / AUTOCOMPLETE
 " =========================================================
 
 " 0 = OFF by default
@@ -241,6 +241,9 @@ let g:autocomplete_enabled = 0
 set completeopt=menuone,noselect
 set shortmess+=c
 
+" ---------------------------------------------------------
+" CHECK BACKSPACE
+" ---------------------------------------------------------
 function! CheckBackspace() abort
     let l:col = col('.') - 1
 
@@ -253,7 +256,8 @@ endfunction
 function! CompleteOn() abort
     let g:autocomplete_enabled = 1
 
-    silent! CocEnable
+    " Start CoC if it is not already running.
+    silent! CocStart
 
     echo "Autocomplete: ON"
 endfunction
@@ -266,7 +270,8 @@ command! CompleteOn call CompleteOn()
 function! CompleteOff() abort
     let g:autocomplete_enabled = 0
 
-    silent! CocDisable
+    " Close completion popup.
+    silent! call coc#pum#stop()
 
     echo "Autocomplete: OFF"
 endfunction
@@ -278,11 +283,11 @@ command! CompleteOff call CompleteOff()
 " ---------------------------------------------------------
 inoremap <silent><expr> <TAB>
 \ !g:autocomplete_enabled
-\ ? "<Tab>"
+\ ? "\<Tab>"
 \ : coc#pum#visible()
 \ ? coc#pum#next(1)
 \ : CheckBackspace()
-\ ? "<Tab>"
+\ ? "\<Tab>"
 \ : coc#refresh()
 
 " ---------------------------------------------------------
@@ -290,20 +295,20 @@ inoremap <silent><expr> <TAB>
 " ---------------------------------------------------------
 inoremap <silent><expr> <S-TAB>
 \ !g:autocomplete_enabled
-\ ? "<S-TAB>"
+\ ? "\<S-TAB>"
 \ : coc#pum#visible()
 \ ? coc#pum#prev(1)
-\ : "<C-h>"
+\ : "\<C-h>"
 
 " ---------------------------------------------------------
 " ENTER
 " ---------------------------------------------------------
 inoremap <silent><expr> <CR>
 \ !g:autocomplete_enabled
-\ ? "<CR>"
+\ ? "\<CR>"
 \ : coc#pum#visible()
 \ ? coc#pum#confirm()
-\ : "<CR>"
+\ : "\<CR>"
 
 " =========================================================
 " CLANGD
