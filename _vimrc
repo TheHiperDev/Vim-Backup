@@ -1,3 +1,4 @@
+" =========================================================
 " LEADER KEY
 " =========================================================
 let mapleader=" "
@@ -30,7 +31,7 @@ set showmatch
 set termguicolors
 set background=dark
 
-set clipboard=unnamed
+set clipboard=unnamedplus
 set hidden
 set updatetime=200
 
@@ -47,6 +48,9 @@ set smartcase
 
 set backspace=indent,eol,start
 
+set encoding=utf-8
+set fileencoding=utf-8
+
 " =========================================================
 " INDENTATION
 " =========================================================
@@ -58,6 +62,12 @@ set autoindent
 set smartindent
 
 " =========================================================
+" UNDO HISTORY
+" =========================================================
+set undofile
+set undodir=~/vimfiles/undo
+
+" =========================================================
 " THEME
 " =========================================================
 colorscheme gruvbox
@@ -66,27 +76,26 @@ let g:gruvbox_contrast_dark = "hard"
 " =========================================================
 " ZOOM SYSTEM
 " =========================================================
-set guifont=Consolas:h12
-let s:zoom = 12
+set guifont=Consolas:h11
+let s:zoom = 11
 
 function! Zoom(delta)
-let s:zoom += a:delta
+    let s:zoom += a:delta
 
-if s:zoom < 6
-    let s:zoom = 6
-endif
+    if s:zoom < 6
+        let s:zoom = 6
+    endif
 
-if s:zoom > 200
-    let s:zoom = 200
-endif
+    if s:zoom > 200
+        let s:zoom = 200
+    endif
 
-execute "set guifont=Consolas:h" . s:zoom
-
+    execute "set guifont=Consolas:h" . s:zoom
 endfunction
 
 function! ZoomReset()
-let s:zoom = 12
-set guifont=Consolas:h12
+    let s:zoom = 11
+    set guifont=Consolas:h11
 endfunction
 
 nnoremap <silent> + :call Zoom(1)<CR>
@@ -107,14 +116,13 @@ inoremap { {<CR>}<Esc>O
 " PROJECT ROOT
 " =========================================================
 function! FindRoot()
-let l:git = finddir('.git', expand('%:p:h') . ';')
+    let l:git = finddir('.git', expand('%:p:h') . ';')
 
-if !empty(l:git)
-    return fnamemodify(l:git, ':h')
-endif
+    if !empty(l:git)
+        return fnamemodify(l:git, ':h')
+    endif
 
-return getcwd()
-
+    return getcwd()
 endfunction
 
 " =========================================================
@@ -129,8 +137,8 @@ nnoremap <silent> <leader>e :NERDTreeToggle<CR>
 nnoremap <silent> <leader>n :NERDTreeFind<CR>
 
 function! NERDTreeReset()
-silent! NERDTreeClose
-execute 'NERDTree ' . fnameescape(expand('%:p:h'))
+    silent! NERDTreeClose
+    execute 'NERDTree ' . fnameescape(expand('%:p:h'))
 endfunction
 
 nnoremap <silent> <leader>r :call NERDTreeReset()<CR>
@@ -145,22 +153,21 @@ nnoremap <silent> <leader>b :Buffers<CR>
 " SEARCH ENGINE
 " =========================================================
 function! FileSearch(query)
-let g:search_term = a:query
+    let g:search_term = a:query
 
-silent! cclose
+    silent! cclose
 
-let l:escaped = escape(a:query, '/\.*$^~[]')
+    let l:escaped = escape(a:query, '/\.*$^~[]')
 
-execute 'vimgrep /' . l:escaped . '/gj %'
+    execute 'vimgrep /' . l:escaped . '/gj %'
 
-copen
+    copen
 
-execute 'match Search /\V' . l:escaped . '/'
+    execute 'match Search /\V' . l:escaped . '/'
 
-if !empty(getqflist())
-    cfirst
-endif
-
+    if !empty(getqflist())
+        cfirst
+    endif
 endfunction
 
 command! -nargs=+ S call FileSearch(<q-args>)
@@ -169,6 +176,17 @@ nnoremap <silent> <leader>s :S
 nnoremap <silent> <leader>j :cnext<CR>
 nnoremap <silent> <leader>k :cprev<CR>
 nnoremap <silent> <leader>q :cclose<CR>:match none<CR>
+
+" =========================================================
+" SEARCH / SCROLL CENTERING
+" =========================================================
+nnoremap n nzz
+nnoremap N Nzz
+
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap <C-f> <C-f>zz
+nnoremap <C-b> <C-b>zz
 
 " =========================================================
 " CP TEMPLATE
@@ -219,22 +237,20 @@ set completeopt=menuone,noselect
 set shortmess+=c
 
 function! CheckBackspace() abort
-let l:col = col('.') - 1
+    let l:col = col('.') - 1
 
-return !l:col || getline('.')[l:col - 1] =~# '\s'
-
+    return !l:col || getline('.')[l:col - 1] =~# '\s'
 endfunction
 
 " ---------------------------------------------------------
 " ENABLE AUTOCOMPLETE
 " ---------------------------------------------------------
 function! CompleteOn() abort
-let g:autocomplete_enabled = 1
+    let g:autocomplete_enabled = 1
 
-silent! CocEnable
+    silent! CocEnable
 
-echo "Autocomplete: ON"
-
+    echo "Autocomplete: ON"
 endfunction
 
 command! CompleteOn call CompleteOn()
@@ -243,12 +259,11 @@ command! CompleteOn call CompleteOn()
 " DISABLE AUTOCOMPLETE
 " ---------------------------------------------------------
 function! CompleteOff() abort
-let g:autocomplete_enabled = 0
+    let g:autocomplete_enabled = 0
 
-silent! CocDisable
+    silent! CocDisable
 
-echo "Autocomplete: OFF"
-
+    echo "Autocomplete: OFF"
 endfunction
 
 command! CompleteOff call CompleteOff()
@@ -319,38 +334,82 @@ nnoremap <leader>tf :tabedit
 nnoremap <leader>ts :tab split<CR>
 
 " =========================================================
+" WINDOW CONTROL
+" =========================================================
+
+" Move between windows
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Resize windows
+nnoremap <C-Up> :resize +2<CR>
+nnoremap <C-Down> :resize -2<CR>
+nnoremap <C-Left> :vertical resize -2<CR>
+nnoremap <C-Right> :vertical resize +2<CR>
+
+" Equalize windows
+nnoremap <leader>= <C-w>=
+
+" =========================================================
+" TERMINAL
+" =========================================================
+nnoremap <silent> <leader>tt :terminal<CR>
+
+" Escape terminal mode
+tnoremap <Esc> <C-\><C-n>
+
+" =========================================================
+" QUICK SAVE
+" =========================================================
+nnoremap <leader>w :w<CR>
+
+" =========================================================
+" WHITESPACE
+" =========================================================
+set listchars=tab:→\ ,trail:·
+
+nnoremap <leader>l :set list!<CR>
+
+" =========================================================
+" RELOAD VIMRC
+" =========================================================
+nnoremap <leader>v :source $MYVIMRC<CR>
+
+" =========================================================
 " COMPILE
 " =========================================================
 nnoremap <silent> <F5> :w<CR>:call CompileRun()<CR>
 
 function! CompileRun()
-write
+    write
 
-let file = expand("%:p")
-let ext = expand("%:e")
+    let file = expand("%:p")
+    let ext = expand("%:e")
 
-if ext ==# "cpp"
+    if ext ==# "cpp"
 
-    execute
-        \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_cpp.bat" "'
-        \ . file . '""'
+        execute
+            \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_cpp.bat" "'
+            \ . file . '""'
 
-elseif ext ==# "pas"
+    elseif ext ==# "pas"
 
-    execute
-        \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_pas.bat" "'
-        \ . file . '""'
+        execute
+            \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_pas.bat" "'
+            \ . file . '""'
 
-elseif ext ==# "py"
+    elseif ext ==# "py"
 
-    execute
-        \ '!start cmd /c "python "' . file . '" & pause"'
+        execute
+            \ '!start cmd /c "python "' . file . '" & pause"'
 
-else
+    else
 
-    echo "No compiler for ." . ext
+        echo "No compiler for ." . ext
 
-endif
+    endif
 
 endfunction
 
@@ -384,6 +443,12 @@ let l:lines = [
 \ "<leader>j → next match",
 \ "<leader>k → previous match",
 \ "<leader>q → close search",
+\ "/pattern → search forward",
+\ "?pattern → search backward",
+\ "n → next search result",
+\ "N → previous search result",
+\ "* → search word under cursor",
+\ "# → search word backward",
 \ "",
 \ "==============================",
 \ "🚀 Compiler",
@@ -404,7 +469,18 @@ let l:lines = [
 \ "==============================",
 \ "🪟 WINDOW CONTROL",
 \ "==============================",
-\ "Ctrl+w h/j/k/l → splits",
+\ "Ctrl+w s → horizontal split",
+\ "Ctrl+w v → vertical split",
+\ "Ctrl+w h/j/k/l → move between splits",
+\ "Ctrl+w H/J/K/L → move split position",
+\ "Ctrl+w w → cycle splits",
+\ "Ctrl+w q → close current split",
+\ "Ctrl+w = → equalize split sizes",
+\ "",
+\ "Ctrl+↑ → increase height",
+\ "Ctrl+↓ → decrease height",
+\ "Ctrl+← → decrease width",
+\ "Ctrl+→ → increase width",
 \ "",
 \ "==============================",
 \ "📑 TABS",
@@ -423,22 +499,210 @@ let l:lines = [
 \ "<leader>ts → split into tab",
 \ "",
 \ "==============================",
+\ "📂 FILES / BUFFERS",
+\ "==============================",
+\ ":e <file> → open file",
+\ ":w → save",
+\ ":wa → save all",
+\ ":q → quit",
+\ ":q! → quit without saving",
+\ ":wq → save and quit",
+\ ":x → save and quit",
+\ ":bd → close buffer",
+\ ":ls → list buffers",
+\ ":bn → next buffer",
+\ ":bp → previous buffer",
+\ ":b <name> → switch buffer",
+\ "",
+\ "==============================",
+\ "💻 TERMINAL",
+\ "==============================",
+\ "<leader>tt → open terminal",
+\ ":terminal → open terminal",
+\ ":term → open terminal",
+\ ":!<command> → run shell command",
+\ "Esc → leave terminal mode",
+\ "",
+\ "Examples:",
+\ ":!dir → list files",
+\ ":!git status → git status",
+\ ":!g++ main.cpp → compile",
+\ "",
+\ "==============================",
+\ "✏️ EDITING",
+\ "==============================",
+\ "i → insert before cursor",
+\ "a → insert after cursor",
+\ "I → insert at line start",
+\ "A → insert at line end",
+\ "o → new line below",
+\ "O → new line above",
+\ "x → delete character",
+\ "dd → delete line",
+\ "D → delete to line end",
+\ "cc → change entire line",
+\ "C → change to line end",
+\ "r → replace character",
+\ "R → replace mode",
+\ "",
+\ "==============================",
+\ "📋 COPY / PASTE",
+\ "==============================",
+\ "yy → copy line",
+\ "yw → copy word",
+\ "p → paste after cursor",
+\ "P → paste before cursor",
+\ "dd → cut line",
+\ "",
+\ "==============================",
+\ "↩️ UNDO / REDO",
+\ "==============================",
+\ "u → undo",
+\ "Ctrl+r → redo",
+\ ". → repeat last change",
+\ "",
+\ "==============================",
+\ "🎯 VISUAL MODE",
+\ "==============================",
+\ "v → character selection",
+\ "V → line selection",
+\ "Ctrl+v → block selection",
+\ "y → copy selection",
+\ "d → delete selection",
+\ "c → change selection",
+\ "> → indent",
+\ "< → unindent",
+\ "",
+\ "==============================",
+\ "🧭 BASIC MOVEMENT",
+\ "==============================",
+\ "h j k l → move cursor",
+\ "w → next word",
+\ "b → previous word",
+\ "e → end of word",
+\ "0 → beginning of line",
+\ "^ → first non-space character",
+\ "$ → end of line",
+\ "gg → top of file",
+\ "G → bottom of file",
+\ "{ / } → previous / next paragraph",
+\ "Ctrl+d → half page down",
+\ "Ctrl+u → half page up",
+\ "Ctrl+f → full page down",
+\ "Ctrl+b → full page up",
+\ "",
+\ "==============================",
+\ "🔢 GOTO",
+\ "==============================",
+\ ":<line> → go to line",
+\ "gg → first line",
+\ "G → last line",
+\ "",
+\ "==============================",
+\ "🔧 COMMANDS",
+\ "==============================",
+\ ":help <topic> → Vim help",
+\ ":set number → enable line numbers",
+\ ":set nonumber → disable line numbers",
+\ ":syntax on → enable syntax highlighting",
+\ ":set paste → paste mode",
+\ ":set nopaste → disable paste mode",
+\ ":messages → show messages",
+\ ":version → Vim version",
+\ ":echo $PATH → show environment variable",
+\ ":pwd → show current directory",
+\ ":cd <dir> → change directory",
+\ "",
+\ "==============================",
 \ "🔍 ZOOM",
 \ "==============================",
 \ "+ / = → zoom in",
 \ "- → zoom out",
-\ "0 → reset zoom (12 default)",
+\ "0 → reset zoom (11 default)",
 \ "",
 \ "==============================",
-\ "🧠 BASIC MOVEMENT",
+\ "🧠 MACROS",
 \ "==============================",
-\ "h j k l → move cursor",
-\ "gg → top of file",
-\ "G → bottom of file",
-\ "w / b / e → word movement",
+\ "q<register> → start recording",
+\ "q → stop recording",
+\ "@<register> → play macro",
+\ "@@ → repeat last macro",
 \ "",
-\ "dd / yy / p → edit",
-\ "u → undo"
+\ "Example:",
+\ "qa → record into register a",
+\ "q → stop recording",
+\ "@a → run macro",
+\ "",
+\ "==============================",
+\ "📌 MARKS",
+\ "==============================",
+\ "m<letter> → create mark",
+\ "'<letter> → jump to mark",
+\ "'' → jump to previous position",
+\ "",
+\ "==============================",
+\ "🧠 BASIC MODE CONTROL",
+\ "==============================",
+\ "Esc → Normal mode",
+\ "i → Insert mode",
+\ "v → Visual mode",
+\ ": → Command mode",
+\ "Ctrl+o → temporary Normal command from Insert",
+\ "",
+\ "==============================",
+\ "🔥 USEFUL",
+\ "==============================",
+\ "% → jump between matching brackets",
+\ "zz → center cursor on screen",
+\ "zt → cursor line to top",
+\ "zb → cursor line to bottom",
+\ ":noh → clear search highlighting",
+\ ":pwd → show current directory",
+\ ":cd <dir> → change directory",
+\ "",
+\ "==============================",
+\ "🛠️ VIM INFO",
+\ "==============================",
+\ ":checkhealth → check Vim setup",
+\ ":scriptnames → show loaded scripts",
+\ ":verbose map <key> → find key mapping",
+\ ":imap <key> → inspect Insert mapping",
+\ ":nmap <key> → inspect Normal mapping",
+\ "",
+\ "==============================",
+\ "⌨️ LEADER",
+\ "==============================",
+\ "Leader key = Space",
+\ "",
+\ "Space + e → NERDTree",
+\ "Space + n → focus file",
+\ "Space + r → reset tree",
+\ "Space + p → fzf files",
+\ "Space + b → buffers",
+\ "Space + s → search",
+\ "Space + j/k → next/previous search result",
+\ "Space + q → close search",
+\ "Space + w → save",
+\ "Space + tt → terminal",
+\ "Space + l → toggle whitespace",
+\ "Space + v → reload vimrc",
+\ "Space + tn → new tab",
+\ "Space + tx → close tab",
+\ "Space + tl/th → next/previous tab",
+\ "Space + to → close other tabs",
+\ "Space + 1-5 → jump tab",
+\ "Space + tf → open file in new tab",
+\ "Space + ts → split into tab",
+\ "Space + = → equalize windows",
+\ "",
+\ "==============================",
+\ "💡 REMEMBER",
+\ "==============================",
+\ "Most Vim commands start from Normal mode.",
+\ "Ctrl+w controls windows.",
+\ ": runs Ex commands.",
+\ ":! runs shell commands.",
+\ "Space is the Leader key."
 \ ]
 
 call writefile(l:lines, l:file)
