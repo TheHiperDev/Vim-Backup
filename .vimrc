@@ -31,9 +31,7 @@ set showmatch
 set termguicolors
 set background=dark
 
-" Linux clipboard
 set clipboard=unnamedplus
-
 set hidden
 set updatetime=200
 
@@ -200,18 +198,15 @@ nnoremap <C-b> <C-b>zz
 " =========================================================
 " CP TEMPLATE
 " =========================================================
-" Put your template here:
-" ~/.vim/cp_template.cpp
-
 let g:cp_template = expand('~/.vim/cp_template.cpp')
 
 command! -nargs=1 CP call CpTemplate(<q-args>)
 
-function! CpTemplate(path)
+function! CpTemplate(path) abort
     let l:file = a:path
 
-    " If the argument is not an absolute path,
-    " open it relative to the current directory.
+    " Relative paths behave like the Windows version:
+    " resolve relative to the current working directory.
     if l:file !~# '^/'
         let l:file = getcwd() . '/' . l:file
     endif
@@ -221,7 +216,7 @@ function! CpTemplate(path)
     " Insert CP template into an empty file
     if line('$') == 1 && getline(1) == ''
         if filereadable(g:cp_template)
-            call append(0, readfile(g:cp_template))
+            call setline(1, readfile(g:cp_template))
         else
             echoerr 'CP template not found: ' . g:cp_template
         endif
@@ -234,10 +229,11 @@ endfunction
 " COC / AUTOCOMPLETE
 " =========================================================
 
-" 0 = OFF by default
-" 1 = ON
+" CoC is COMPLETELY OFF when Vim starts.
 let g:autocomplete_enabled = 0
+let g:coc_start_at_startup = 0
 
+" Completion popup settings
 set completeopt=menuone,noselect
 set shortmess+=c
 
@@ -256,8 +252,11 @@ endfunction
 function! CompleteOn() abort
     let g:autocomplete_enabled = 1
 
-    " Start CoC if it is not already running.
+    " Start CoC service
     silent! CocStart
+
+    " Enable CoC event handling
+    silent! CocEnable
 
     echo "Autocomplete: ON"
 endfunction
@@ -270,8 +269,11 @@ command! CompleteOn call CompleteOn()
 function! CompleteOff() abort
     let g:autocomplete_enabled = 0
 
-    " Close completion popup.
+    " Close any visible completion popup
     silent! call coc#pum#stop()
+
+    " Disable CoC event handling
+    silent! CocDisable
 
     echo "Autocomplete: OFF"
 endfunction
@@ -347,24 +349,20 @@ nnoremap <leader>ts :tab split<CR>
 " WINDOW CONTROL
 " =========================================================
 
-" Native Vim:
-" Ctrl+w h/j/k/l → move between windows
-" Ctrl+w H/J/K/L → move window position
-
-" Direct navigation
+" Move between windows
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
-" Window resizing
+" Resize windows
 nnoremap <C-Up> :resize +2<CR>
 nnoremap <C-Down> :resize -2<CR>
 nnoremap <C-Left> :vertical resize -2<CR>
 nnoremap <C-Right> :vertical resize +2<CR>
 
 " Equalize windows
-nnoremap <leader>= <C-w>=
+nnoremap <silent> <leader>= <C-w>=
 
 " =========================================================
 " TERMINAL
@@ -487,7 +485,6 @@ function! OpenKeybinds()
     \ "Ctrl+w q → close current split",
     \ "Ctrl+w = → equalize split sizes",
     \ "",
-    \ "Ctrl+h/j/k/l → direct split navigation",
     \ "Ctrl+↑ → increase height",
     \ "Ctrl+↓ → decrease height",
     \ "Ctrl+← → decrease width",
@@ -627,9 +624,9 @@ function! OpenKeybinds()
     \ "==============================",
     \ "🔍 ZOOM",
     \ "==============================",
-    \ "+ / = → zoom in (GUI Vim)",
-    \ "- → zoom out (GUI Vim)",
-    \ "0 → reset zoom",
+    \ "+ / = → zoom in",
+    \ "- → zoom out",
+    \ "0 → reset zoom (12 default)",
     \ "",
     \ "==============================",
     \ "🧠 MACROS",
