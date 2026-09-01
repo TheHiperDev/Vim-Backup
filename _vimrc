@@ -390,39 +390,120 @@ nnoremap <leader>l :set list!<CR>
 nnoremap <leader>v :source $MYVIMRC<CR>
 
 " =========================================================
-" COMPILE
+" COMPILE / RUN
 " =========================================================
 nnoremap <silent> <F5> :w<CR>:call CompileRun()<CR>
 
 function! CompileRun()
     write
 
-    let file = expand("%:p")
-    let ext = expand("%:e")
+    let l:file = expand("%:p")
+    let l:dir  = expand("%:p:h")
+    let l:name = expand("%:t:r")
+    let l:ext  = expand("%:e")
 
-    if ext ==# "cpp"
+    " ---------------------------------------------------------
+    " C++
+    " ---------------------------------------------------------
+    if l:ext ==# "cpp"
 
         execute
             \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_cpp.bat" "'
-            \ . file . '""'
+            \ . l:file . '""'
 
-    elseif ext ==# "pas"
+    " ---------------------------------------------------------
+    " C
+    " ---------------------------------------------------------
+    elseif l:ext ==# "c"
+
+        execute
+            \ '!start cmd /c "gcc "' . l:file .
+            \ '" -o "' . l:dir . '\' . l:name .
+            \ '.exe" && "' . l:dir . '\' . l:name . '.exe" & pause"'
+
+    " ---------------------------------------------------------
+    " Pascal
+    " ---------------------------------------------------------
+    elseif l:ext ==# "pas"
 
         execute
             \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_pas.bat" "'
-            \ . file . '""'
+            \ . l:file . '""'
 
-    elseif ext ==# "py"
+    " ---------------------------------------------------------
+    " Python
+    " ---------------------------------------------------------
+    elseif l:ext ==# "py"
 
         execute
-            \ '!start cmd /c "python "' . file . '" & pause"'
+            \ '!start cmd /c "python "' . l:file .
+            \ '" & pause"'
 
+    " ---------------------------------------------------------
+    " Rust
+    " ---------------------------------------------------------
+    elseif l:ext ==# "rs"
+
+        execute
+            \ '!start cmd /c "rustc "' . l:file .
+            \ '" -o "' . l:dir . '\' . l:name .
+            \ '.exe" && "' . l:dir . '\' . l:name .
+            \ '.exe" & pause"'
+
+    " ---------------------------------------------------------
+    " Go
+    " ---------------------------------------------------------
+    elseif l:ext ==# "go"
+
+        execute
+            \ '!start cmd /c "cd /d "' . l:dir .
+            \ '" && go run "' . l:file . '" & pause"'
+
+    " ---------------------------------------------------------
+    " Java
+    " ---------------------------------------------------------
+    elseif l:ext ==# "java"
+
+        execute
+            \ '!start cmd /c "cd /d "' . l:dir .
+            \ '" && javac "' . l:file .
+            \ '" && java ' . l:name . ' & pause"'
+
+    " ---------------------------------------------------------
+    " C#
+    " ---------------------------------------------------------
+    elseif l:ext ==# "cs"
+
+        execute
+            \ '!start cmd /c "cd /d "' . l:dir .
+            \ '" && dotnet run & pause"'
+
+    " ---------------------------------------------------------
+    " JavaScript
+    " ---------------------------------------------------------
+    elseif l:ext ==# "js"
+
+        execute
+            \ '!start cmd /c "node "' . l:file .
+            \ '" & pause"'
+
+    " ---------------------------------------------------------
+    " TypeScript
+    " ---------------------------------------------------------
+    elseif l:ext ==# "ts"
+
+        execute
+            \ '!start cmd /c "tsx "' . l:file .
+            \ '" & pause"'
+
+    " ---------------------------------------------------------
+    " Unknown language
+    " ---------------------------------------------------------
     else
 
-        echo "No compiler for ." . ext
+        echo "No compiler/interpreter for ." . l:ext
 
     endif
-
 endfunction
 
 " =========================================================
@@ -723,4 +804,6 @@ execute "edit " . l:file
 endfunction
 
 command! Keybinds call OpenKeybinds()
+
+
 

@@ -390,7 +390,7 @@ nnoremap <leader>l :set list!<CR>
 nnoremap <leader>v :source $MYVIMRC<CR>
 
 " =========================================================
-" COMPILE
+" COMPILE / RUN
 " =========================================================
 nnoremap <silent> <F5> :w<CR>:call CompileRun()<CR>
 
@@ -398,25 +398,167 @@ function! CompileRun()
     write
 
     let l:file = expand("%:p")
-    let l:ext = expand("%:e")
-    let l:name = expand("%:r")
+    let l:dir  = expand("%:p:h")
+    let l:name = expand("%:t:r")
+    let l:out  = expand("%:p:r")
+    let l:ext  = expand("%:e")
 
-    if l:ext ==# "cpp"
+    " ---------------------------------------------------------
+    " C
+    " ---------------------------------------------------------
+    if l:ext ==# "c"
 
-        execute '!g++ -std=c++17 -O2 -pipe "' . l:file .
-            \ '" -o "' . l:name . '" && "' . l:name . '"'
+        if !executable('gcc')
+            echoerr 'GCC not found'
+            return
+        endif
 
+        execute '!gcc -std=c17 -O2 -pipe ' .
+            \ shellescape(l:file) .
+            \ ' -o ' . shellescape(l:out) .
+            \ ' && ' . shellescape(l:out)
+
+    " ---------------------------------------------------------
+    " C++
+    " ---------------------------------------------------------
+    elseif l:ext ==# "cpp"
+
+        if !executable('g++')
+            echoerr 'G++ not found'
+            return
+        endif
+
+        execute '!g++ -std=c++17 -O2 -pipe ' .
+            \ shellescape(l:file) .
+            \ ' -o ' . shellescape(l:out) .
+            \ ' && ' . shellescape(l:out)
+
+    " ---------------------------------------------------------
+    " Pascal
+    " ---------------------------------------------------------
     elseif l:ext ==# "pas"
 
-        execute '!fpc "' . l:file . '"'
+        if !executable('fpc')
+            echoerr 'Free Pascal Compiler not found'
+            return
+        endif
 
+        execute '!fpc ' . shellescape(l:file)
+
+        if filereadable(l:out)
+            execute '!' . shellescape(l:out)
+        endif
+
+    " ---------------------------------------------------------
+    " Python
+    " ---------------------------------------------------------
     elseif l:ext ==# "py"
 
-        execute '!python3 "' . l:file . '"'
+        if !executable('python3')
+            echoerr 'Python 3 not found'
+            return
+        endif
 
+        execute '!python3 ' . shellescape(l:file)
+
+    " ---------------------------------------------------------
+    " Rust
+    " ---------------------------------------------------------
+    elseif l:ext ==# "rs"
+
+        if !executable('rustc')
+            echoerr 'Rust compiler not found'
+            return
+        endif
+
+        execute '!rustc -O ' .
+            \ shellescape(l:file) .
+            \ ' -o ' . shellescape(l:out) .
+            \ ' && ' . shellescape(l:out)
+
+    " ---------------------------------------------------------
+    " Go
+    " ---------------------------------------------------------
+    elseif l:ext ==# "go"
+
+        if !executable('go')
+            echoerr 'Go not found'
+            return
+        endif
+
+        execute '!cd ' . shellescape(l:dir) .
+            \ ' && go run ' . shellescape(l:file)
+
+    " ---------------------------------------------------------
+    " Java
+    " ---------------------------------------------------------
+    elseif l:ext ==# "java"
+
+        if !executable('javac')
+            echoerr 'Java compiler (javac) not found'
+            return
+        endif
+
+        if !executable('java')
+            echoerr 'Java runtime not found'
+            return
+        endif
+
+        execute '!cd ' . shellescape(l:dir) .
+            \ ' && javac ' . shellescape(l:file) .
+            \ ' && java ' . shellescape(l:name)
+
+    " ---------------------------------------------------------
+    " C#
+    " ---------------------------------------------------------
+    elseif l:ext ==# "cs"
+
+        if !executable('dotnet')
+            echoerr '.NET SDK not found'
+            return
+        endif
+
+        execute '!cd ' . shellescape(l:dir) .
+            \ ' && dotnet run'
+
+    " ---------------------------------------------------------
+    " JavaScript
+    " ---------------------------------------------------------
+    elseif l:ext ==# "js"
+
+        if !executable('node')
+            echoerr 'Node.js not found'
+            return
+        endif
+
+        execute '!node ' . shellescape(l:file)
+
+    " ---------------------------------------------------------
+    " TypeScript
+    " ---------------------------------------------------------
+    elseif l:ext ==# "ts"
+
+        if executable('tsx')
+
+            execute '!tsx ' . shellescape(l:file)
+
+        elseif executable('ts-node')
+
+            execute '!ts-node ' . shellescape(l:file)
+
+        else
+
+            echoerr 'Neither tsx nor ts-node was found'
+            return
+
+        endif
+
+    " ---------------------------------------------------------
+    " Unknown language
+    " ---------------------------------------------------------
     else
 
-        echo "No compiler for ." . l:ext
+        echo 'No compiler/interpreter for .' . l:ext
 
     endif
 endfunction
