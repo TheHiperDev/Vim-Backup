@@ -406,35 +406,37 @@ function! CompileRun()
     " C++
     " ---------------------------------------------------------
     if l:ext ==# "cpp"
-
         execute
-            \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_cpp.bat" "'
-            \ . l:file . '""'
+            \ '!start cmd /c "g++ -std=c++17 "' . l:file .
+            \ '" -o "' . l:dir . '\' . l:name .
+            \ '.exe" && "' . l:dir . '\' . l:name .
+            \ '.exe" & pause"'
 
     " ---------------------------------------------------------
     " C
     " ---------------------------------------------------------
     elseif l:ext ==# "c"
-
         execute
             \ '!start cmd /c "gcc "' . l:file .
             \ '" -o "' . l:dir . '\' . l:name .
-            \ '.exe" && "' . l:dir . '\' . l:name . '.exe" & pause"'
+            \ '.exe" && "' . l:dir . '\' . l:name .
+            \ '.exe" & pause"'
 
     " ---------------------------------------------------------
     " Pascal
     " ---------------------------------------------------------
     elseif l:ext ==# "pas"
-
         execute
-            \ '!start cmd /c ""C:\Users\istra_xckxrbh\OneDrive\Belgeler\run_pas.bat" "'
-            \ . l:file . '""'
+            \ '!start cmd /c "cd /d "' . l:dir .
+            \ '" && fpc "' . l:file .
+            \ '" -o"' . l:dir . '\' . l:name .
+            \ '.exe" && "' . l:dir . '\' . l:name .
+            \ '.exe" & pause"'
 
     " ---------------------------------------------------------
     " Python
     " ---------------------------------------------------------
     elseif l:ext ==# "py"
-
         execute
             \ '!start cmd /c "python "' . l:file .
             \ '" & pause"'
@@ -443,7 +445,6 @@ function! CompileRun()
     " Rust
     " ---------------------------------------------------------
     elseif l:ext ==# "rs"
-
         execute
             \ '!start cmd /c "rustc "' . l:file .
             \ '" -o "' . l:dir . '\' . l:name .
@@ -454,7 +455,6 @@ function! CompileRun()
     " Go
     " ---------------------------------------------------------
     elseif l:ext ==# "go"
-
         execute
             \ '!start cmd /c "cd /d "' . l:dir .
             \ '" && go run "' . l:file . '" & pause"'
@@ -463,7 +463,6 @@ function! CompileRun()
     " Java
     " ---------------------------------------------------------
     elseif l:ext ==# "java"
-
         execute
             \ '!start cmd /c "cd /d "' . l:dir .
             \ '" && javac "' . l:file .
@@ -473,7 +472,6 @@ function! CompileRun()
     " C#
     " ---------------------------------------------------------
     elseif l:ext ==# "cs"
-
         execute
             \ '!start cmd /c "cd /d "' . l:dir .
             \ '" && dotnet run & pause"'
@@ -482,7 +480,6 @@ function! CompileRun()
     " JavaScript
     " ---------------------------------------------------------
     elseif l:ext ==# "js"
-
         execute
             \ '!start cmd /c "node "' . l:file .
             \ '" & pause"'
@@ -491,7 +488,6 @@ function! CompileRun()
     " TypeScript
     " ---------------------------------------------------------
     elseif l:ext ==# "ts"
-
         execute
             \ '!start cmd /c "tsx "' . l:file .
             \ '" & pause"'
@@ -500,10 +496,9 @@ function! CompileRun()
     " Unknown language
     " ---------------------------------------------------------
     else
-
         echo "No compiler/interpreter for ." . l:ext
 
-    endif
+    endif 
 endfunction
 
 " =========================================================
