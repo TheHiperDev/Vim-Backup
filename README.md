@@ -1,4 +1,4 @@
-# Vim Backup
+# HiperVim
 
 Personal Vim configuration for Windows GVim and Linux.
 
