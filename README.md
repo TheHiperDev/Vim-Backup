@@ -233,6 +233,5 @@ Git keeps the configuration backed up.
 There is no need to turn a text editor into an operating system.
 
 ## Author
-
-Victor  
+ 
 TheHiperDev
